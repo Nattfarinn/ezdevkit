@@ -1,0 +1,39 @@
+<?php
+/**
+ * @copyright Copyright (C) eZ Systems AS. All rights reserved.
+ * @license For full copyright and license inexampleation view LICENSE file distributed with this source code.
+ */
+namespace {{ lib_namespace }}\Core\REST\Server\Output\ValueObjectVisitor;
+
+use eZ\Publish\Core\REST\Common\Output\Generator;
+use eZ\Publish\Core\REST\Common\Output\ValueObjectVisitor;
+use eZ\Publish\Core\REST\Common\Output\Visitor;
+
+/**
+ * ExampleStruct value object visitor.
+ */
+class Example extends ValueObjectVisitor
+{
+    /**
+     * Visit struct returned by controllers.
+     *
+     * @param \eZ\Publish\Core\REST\Common\Output\Visitor $visitor
+     * @param \eZ\Publish\Core\REST\Common\Output\Generator $generator
+     * @param mixed $data
+     */
+    public function visit(Visitor $visitor, Generator $generator, $data)
+    {
+        $visitor->setHeader('Content-Type', $generator->getMediaType('Example'));
+        $visitor->setHeader('Accept-Patch', false);
+
+        $generator->startObjectElement('Example');
+
+        $generator->startAttribute('exampleId', $data->exampleId);
+        $generator->endAttribute('exampleId');
+
+        $generator->startValueElement('title', $data->title);
+        $generator->endValueElement('title');
+
+        $generator->endObjectElement('Example');
+    }
+}

@@ -1,0 +1,49 @@
+parameters:
+    {{ bundle_name_yml }}.persistence.gateway.doctrine.class: {{ lib_namespace }}\Core\Persistence\Gateway\DoctrineDatabase
+    {{ bundle_name_yml }}.controller.{{ bundle_name|lower }}.class: {{ bundle_namespace }}\Controller\{{ bundle_name }}Controller
+    {{ bundle_name_yml }}.repository.service.{{ bundle_name|lower }}.class: {{ lib_namespace }}\Core\Repository\{{ bundle_name }}Service
+    {{ bundle_name_yml }}.signalslot.service.{{ bundle_name|lower }}.class: {{ lib_namespace }}\Core\SignalSlot\{{ bundle_name }}Service
+{% if example %}
+
+    # Example
+    {{ bundle_name_yml }}.api.value_object.example.class: {{ lib_namespace }}\API\Repository\ValueObject\ExampleStruct
+    {{ bundle_name_yml }}.signalslot.example_logger.class: {{ lib_namespace }}\Core\SignalSlot\Slot\ExampleLoggerSlot
+{% endif %}
+
+services:
+    {{ bundle_name_yml }}.api.service.{{ bundle_name|lower }}:
+        alias: {{ bundle_name_yml }}.signalslot.service.{{ bundle_name|lower }}
+
+    {{ bundle_name_yml }}.api.service.inner_{{ bundle_name|lower }}:
+        class: '%{{ bundle_name_yml }}.repository.service.{{ bundle_name|lower }}.class%'
+        arguments:
+            - '@{{ bundle_name_yml }}.persistence.gateway.doctrine'
+
+    {{ bundle_name_yml }}.signalslot.service.{{ bundle_name|lower }}:
+        class: '%{{ bundle_name_yml }}.signalslot.service.{{ bundle_name|lower }}.class%'
+        arguments:
+            - '@{{ bundle_name_yml }}.api.service.inner_{{ bundle_name|lower }}'
+            - '@ezpublish.signalslot.signal_dispatcher'
+
+    {{ bundle_name_yml }}.persistence.gateway.doctrine:
+        class: '%{{ bundle_name_yml }}.persistence.gateway.doctrine.class%'
+        arguments:
+            - '@ezpublish.api.storage_engine.legacy.dbhandler'
+
+    {{ bundle_name_yml }}.controller.{{ bundle_name|lower }}:
+        class: '%{{ bundle_name_yml }}.controller.{{ bundle_name|lower }}.class%'
+        parent: {{ bundle_name_yml }}.rest_controller.base
+        arguments:
+            - '@{{ bundle_name_yml }}.api.service.{{ bundle_name|lower }}'
+{% if example %}
+
+    # Example
+    {{ bundle_name_yml }}.api.value_object.example:
+        class: '%{{ bundle_name_yml }}.api.value_object.example.class%'
+
+    {{ bundle_name_yml }}.signalslot.example_logger.class:
+        class: '%{{ bundle_name_yml }}.signalslot.example_logger.class%'
+        arguments
+        tags:
+            - { name: ezpublish.api.slot, signal: '*' }
+{% endif %}

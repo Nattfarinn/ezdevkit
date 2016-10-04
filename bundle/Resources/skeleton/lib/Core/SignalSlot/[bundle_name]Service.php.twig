@@ -1,0 +1,59 @@
+<?php
+/**
+ * @copyright Copyright (C) eZ Systems AS. All rights reserved.
+ * @license For full copyright and license information view LICENSE file distributed with this source code.
+ */
+namespace {{ lib_namespace }}\Core\SignalSlot;
+
+use {{ lib_namespace }}\API\Repository\{{ bundle_name }}ServiceInterface;
+use eZ\Publish\Core\SignalSlot\SignalDispatcher;
+{% if example %}
+use {{ lib_namespace }}\API\Repository\ValueObject\ExampleCreateStruct;
+use {{ lib_namespace }}\Core\SignalSlot\Signal\ExampleCreateSignal;
+{% endif %}
+
+/**
+ * {{ bundle_name }} service.
+ */
+class {{ bundle_name }}Service implements {{ bundle_name }}ServiceInterface
+{
+    /** @var {{ bundle_name }}ServiceInterface */
+    protected $service;
+
+    /**
+     * SignalDispatcher.
+     *
+     * @var \eZ\Publish\Core\SignalSlot\SignalDispatcher
+     */
+    protected $signalDispatcher;
+
+    /**
+     * {{ bundle_name }}Service constructor.
+     *
+     * @param \{{ lib_namespace }}\API\Repository\{{ bundle_name }}ServiceInterface $service
+     * @param \eZ\Publish\Core\SignalSlot\SignalDispatcher $signalDispatcher
+     */
+    public function __construct(
+        {{ bundle_name }}ServiceInterface $service,
+        SignalDispatcher $signalDispatcher
+    ) {
+        $this->service = $service;
+        $this->signalDispatcher = $signalDispatcher;
+    }
+{% if example %}
+
+    public function createExample(ExampleCreateStruct $exampleCreateStruct)
+    {
+        $exampleCreate = $this->service->createExample($exampleCreateStruct);
+
+        $this->signalDispatcher->emit(
+            new ExampleCreateSignal([
+                'id' => $exampleCreate->id,
+                'timestamp' => new \DateTime(),
+            ])
+        );
+
+        return $exampleCreate;
+    }
+{% endif %}
+}

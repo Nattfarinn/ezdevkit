@@ -1,0 +1,25 @@
+<?php
+/**
+ * @copyright Copyright (C) eZ Systems AS. All rights reserved.
+ * @license For full copyright and license information view LICENSE file distributed with this source code.
+ */
+namespace {{ lib_namespace }}\Core\REST\Server\Output\Generator;
+
+/**
+ * MediaType Trait.
+ */
+trait MediaTypeTrait
+{
+    /**
+     * Generates a media type from $name and $type.
+     *
+     * @param string $name
+     * @param string $type
+     *
+     * @return string
+     */
+    protected function generateMediaType($name, $type)
+    {
+        return "application/vnd.{{ bundle_name|lower }}.api.{$name}+{$type}";
+    }
+}

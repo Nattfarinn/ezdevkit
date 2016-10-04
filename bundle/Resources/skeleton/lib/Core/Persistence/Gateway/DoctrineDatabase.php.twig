@@ -1,0 +1,127 @@
+<?php
+/**
+ * @copyright Copyright (C) eZ Systems AS. All rights reserved.
+ * @license For full copyright and license information view LICENSE file distributed with this source code.
+ */
+namespace {{ lib_namespace }}\Core\Persistence\Gateway;
+
+use {{ lib_namespace }}\SPI\Persistence\HandlerInterface;
+use eZ\Publish\Core\Persistence\Database\Query;
+use eZ\Publish\Core\Persistence\Database\DatabaseHandler;
+{% if example %}
+use {{ lib_namespace }}\SPI\Persistence\ValueObject\ExampleCreateStruct;
+use {{ lib_namespace }}\SPI\Persistence\ValueObject\ExampleStruct;
+{% endif %}
+
+/**
+ * {{ bundle_name }} gateway implementation using the Doctrine database.
+ */
+class DoctrineDatabase implements HandlerInterface
+{
+{% if example %}
+    /**
+     * {{ bundle_name }} main table name.
+     */
+    const SCHEMA_TABLE = '{{ bundle_name_yml }}_example';
+
+{% endif %}
+    /** @var DatabaseHandler */
+    protected $handler;
+
+    /**
+     * DoctrineDatabase constructor.
+     *
+     * @param \eZ\Publish\Core\Persistence\Database\DatabaseHandler $handler
+     */
+    public function __construct(DatabaseHandler $handler)
+    {
+        $this->handler = $handler;
+    }
+{% if example %}
+
+/**
+     * Insert new example row
+     *
+     * @param \{{ lib_namespace }}\SPI\Persistence\ValueObject\ExampleCreateStruct $exampleCreateStruct
+     *
+     * @return int
+     */
+    public function insertExample(ExampleCreateStruct $exampleCreateStruct)
+    {
+        // $query = $this->handler->createInsertQuery();
+        // $query->insertInto($this->handler->quoteTable(self::SCHEMA_TABLE));
+        //
+        // $this->bindColumnValue($query, 'title', $exampleCreateStruct->title);
+        //
+        // $query->prepare()->execute();
+        //
+        // $id = $this->handler->lastInsertId(
+        //     $this->handler->getSequenceName(self::SCHEMA_TABLE, 'id')
+        // );
+        //
+        // return $id;
+
+        return rand(1000, 2000);
+    }
+
+    /**
+     * Get example row
+     *
+     * @param int $exampleId
+     *
+     * @return \{{ lib_namespace }}\SPI\Persistence\ValueObject\ExampleStruct
+     */
+    public function getExample($exampleId)
+    {
+        // $query = $handler->createSelectQuery();
+        // $query->from($handler->quoteTable(self::SCHEMA_TABLE));
+        //
+        // $query->select(
+        //     $handler->quoteColumn('id', self::SCHEMA_TABLE),
+        //     $handler->quoteColumn('title', self::SCHEMA_TABLE)
+        // );
+        //
+        // $query->where(
+        //     $query->expr->eq(
+        //         $this->handler->quoteColumn('id', self::SCHEMA_TABLE),
+        //         $query->bindValue($exampleId, null, PDO::PARAM_INT)
+        //     )
+        // );
+        //
+        // $query->limit(1);
+        //
+        // $statement = $query->prepare();
+        // $statement->execute();
+        //
+        // $exampleSpi = $statement->fetch(\PDO::FETCH_ASSOC);
+        //
+        // if (empty($workflowSpi)) {
+        //     return new ExampleStruct();
+        // }
+        //
+        // return new ExampleStruct($workflowSpi);
+
+        return new ExampleStruct([
+            'id' => $exampleId,
+            'title' => sha1(microtime()),
+        ]);
+    }
+{% endif %}
+
+    /**
+     * Helper to make insert value one-liners human readable.
+     *
+     * @internal
+     *
+     * @param Query $query Query to work on (context)
+     * @param string $column Table column name
+     * @param mixed $value Value to be insterted
+     */
+    protected function bindColumnValue(Query $query, $column, $value)
+    {
+        $query->set(
+            $this->handler->quoteColumn($column),
+            $query->bindValue($value)
+        );
+    }
+}

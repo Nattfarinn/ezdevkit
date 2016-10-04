@@ -1,0 +1,56 @@
+<?php
+/**
+ * @copyright Copyright (C) eZ Systems AS. All rights reserved.
+ * @license For full copyright and license information view LICENSE file distributed with this source code.
+ */
+namespace {{ lib_namespace }}\Core\Persistence;
+
+use {{ lib_namespace }}\SPI\Persistence\HandlerInterface;
+{% if example %}
+use {{ lib_namespace }}\SPI\Persistence\ValueObject\ExampleCreateStruct;
+{% endif %}
+
+/**
+ * Handler for {{ bundle_name }} Storage Engine.
+ */
+class Handler implements HandlerInterface
+{
+    /** @var \{{ lib_namespace }}\SPI\Persistence\HandlerInterface */
+    protected $gateway;
+
+    /**
+     * Handler constructor.
+     *
+     * @param \{{ lib_namespace }}\SPI\Persistence\HandlerInterface $gateway
+     */
+    public function __construct(HandlerInterface $gateway)
+    {
+        $this->gateway = $gateway;
+    }
+{% if example %}
+
+    /**
+     * Insert new example row
+     *
+     * @param \{{ lib_namespace }}\SPI\Persistence\ValueObject\ExampleCreateStruct $exampleCreateStruct
+     *
+     * @return int
+     */
+    public function insertExample(ExampleCreateStruct $exampleCreateStruct)
+    {
+        return $this->gateway->insertExample($exampleCreateStruct);
+    }
+
+    /**
+     * Get example row
+     *
+     * @param int $exampleId
+     *
+     * @return \{{ lib_namespace }}\SPI\Persistence\ValueObject\ExampleStruct
+     */
+    public function getExample($exampleId)
+    {
+        return $this->gateway->getExample($exampleId);
+    }
+{% endif %}
+}

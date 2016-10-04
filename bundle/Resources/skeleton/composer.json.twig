@@ -1,0 +1,29 @@
+{
+    "name": "",
+    "description": "{{ bundle_name }} bundle",
+    "authors": [
+        {
+            "name": "",
+            "email": ""
+        }
+    ],
+    "license": "",
+    "autoload": {
+        "psr-4": {
+            "{{ lib_namespace|replace({'\\': '\\\\'}) }}\\": "lib",
+            "{{ lib_namespace|replace({'\\': '\\\\'}) }}\\Tests\\": "tests/{{ bundle_name }}",
+            "{{ bundle_namespace|replace({'\\': '\\\\'}) }}\\": "bundle",
+            "{{ bundle_namespace|replace({'\\': '\\\\'}) }}\\Tests\\": "tests/{{ bundle_name }}Bundle"
+        }
+    },
+    "require": {
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.7.0"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    }
+}

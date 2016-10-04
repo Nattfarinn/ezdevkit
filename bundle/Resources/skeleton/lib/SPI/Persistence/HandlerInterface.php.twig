@@ -1,0 +1,36 @@
+<?php
+/**
+ * @copyright Copyright (C) eZ Systems AS. All rights reserved.
+ * @license For full copyright and license information view LICENSE file distributed with this source code.
+ */
+namespace {{ lib_namespace }}\SPI\Persistence;
+
+{% if example %}
+use {{ lib_namespace }}\SPI\Persistence\ValueObject\ExampleCreateStruct;
+{% endif %}
+
+/**
+ * {{ bundle_name }} handler interface
+ */
+interface HandlerInterface
+{
+{% if example %}
+    /**
+     * Insert new example row
+     *
+     * @param \{{ lib_namespace }}\SPI\Persistence\ValueObject\ExampleCreateStruct $exampleCreateStruct
+     *
+     * @return int
+     */
+    public function insertExample(ExampleCreateStruct $exampleCreateStruct);
+
+    /**
+     * Get example row
+     *
+     * @param int $exampleId
+     *
+     * @return \{{ lib_namespace }}\SPI\Persistence\ValueObject\ExampleStruct
+     */
+    public function getExample($exampleId);
+{% endif %}
+}

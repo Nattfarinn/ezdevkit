@@ -1,0 +1,58 @@
+<?php
+/**
+ * @copyright Copyright (C) eZ Systems AS. All rights reserved.
+ * @license For full copyright and license information view LICENSE file distributed with this source code.
+ */
+namespace {{ lib_namespace }}\Core\Repository;
+
+use {{ lib_namespace }}\API\Repository\{{ bundle_name }}ServiceInterface;
+use {{ lib_namespace }}\SPI\Persistence\HandlerInterface;
+{% if example %}
+use {{ lib_namespace }}\API\Repository\ValueObject\ExampleStruct as APIExampleStruct;
+use {{ lib_namespace }}\API\Repository\ValueObject\ExampleCreateStruct as APIExampleCreateStruct;
+use {{ lib_namespace }}\SPI\Persistence\ValueObject\ExampleCreateStruct as SPIExampleCreateStruct;
+{% endif %}
+
+/**
+ * {{ bundle_name }} service.
+ */
+class {{ bundle_name }}Service implements {{ bundle_name }}ServiceInterface
+{
+    /** @var HandlerInterface */
+    protected $persistenceHandler;
+
+    /**
+     * {{ bundle_name }}Service constructor.
+     *
+     * @param \{{ lib_namespace }}\SPI\Persistence\HandlerInterface $persistenceHandler
+     */
+    public function __construct(
+        HandlerInterface $persistenceHandler
+    ) {
+        $this->persistenceHandler = $persistenceHandler;
+    }
+{% if example %}
+
+    /**
+     * Creates new example data.
+     *
+     * @param \{{ lib_namespace }}\API\Repository\ValueObject\ExampleCreateStruct $exampleCreateStruct
+     *
+     * @return \{{ lib_namespace }}\API\Repository\ValueObject\ExampleStruct
+     */
+    public function createExample(APIExampleCreateStruct $exampleCreateStruct)
+    {
+        $spiExampleCreateStruct = new SPIExampleCreateStruct([
+            'title' => $exampleCreateStruct->title,
+        ]);
+
+        $exampleId = $this->persistenceHandler->insertExample($spiExampleCreateStruct);
+        $spiExample = $this->persistenceHandler->getExample($exampleId);
+
+        return new APIExampleStruct([
+            'id' => $spiExample->id,
+            'title' => $spiExample->title,
+        ]);
+    }
+{% endif %}
+}

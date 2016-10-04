@@ -1,0 +1,63 @@
+parameters:
+    # Classes
+    {{ bundle_name_yml }}.rest.controller.base.class: {{ lib_namespace }}\Core\REST\Server\RestController
+    {{ bundle_name_yml }}.rest.output.generator.json.class: {{ lib_namespace }}\Core\REST\Server\Output\Generator\Json
+    {{ bundle_name_yml }}.rest.output.generator.xml.class: {{ lib_namespace }}\Core\REST\Server\Output\Generator\Xml
+
+    # Parameters
+    {{ bundle_name_yml }}.rest.output.visitor.json.regexps: ['(^application/vnd\.{{ bundle_name|lower }}\.api\.[A-Za-z]+\+json$)']
+    {{ bundle_name_yml }}.rest.output.visitor.xml.regexps: ['(^application/vnd\.{{ bundle_name|lower }}\.api\.[A-Za-z]+\+xml$)']
+{% if example %}
+
+    # Example
+    {{ bundle_name_yml }}.rest.input.parser.example_create.class: {{ lib_namespace }}\Core\REST\Client\Input\Parser\ExampleCreate
+    {{ bundle_name_yml }}.rest.output.value_object_visitor.example.class: {{ lib_namespace }}\Core\REST\Server\Output\ValueObjectVisitor\Example
+{% endif %}
+
+services:
+    {{ bundle_name_yml }}.rest_controller.base:
+        class: '%{{ bundle_name_yml }}.rest.controller.base.class%'
+        abstract: true
+        calls:
+            - [ setInputDispatcher, ['@ezpublish_rest.input.dispatcher'] ]
+
+    {{ bundle_name_yml }}.rest.output.generator.json:
+        class: '%{{ bundle_name_yml }}.rest.output.generator.json.class%'
+        calls:
+            - [ setFormatOutput, [ '%kernel.debug%' ] ]
+
+    {{ bundle_name_yml }}.rest.output.generator.xml:
+        class: '%{{ bundle_name_yml }}.rest.output.generator.xml.class%'
+        calls:
+            - [ setFormatOutput, [ '%kernel.debug%' ] ]
+
+    {{ bundle_name_yml }}.rest.output.visitor.json:
+        class: '%ezpublish_rest.output.visitor.class%'
+        arguments:
+            - '@{{ bundle_name_yml }}.rest.output.generator.json'
+            - '@ezpublish_rest.output.value_object_visitor.dispatcher'
+        tags:
+            - { name: ezpublish_rest.output.visitor, regexps: {{ bundle_name_yml }}.rest.output.visitor.json.regexps, priority: 10 }
+
+    {{ bundle_name_yml }}.rest.output.visitor.xml:
+        class: '%ezpublish_rest.output.visitor.class%'
+        arguments:
+            - '@{{ bundle_name_yml }}.rest.output.generator.xml'
+            - '@ezpublish_rest.output.value_object_visitor.dispatcher'
+        tags:
+            - { name: ezpublish_rest.output.visitor, regexps: {{ bundle_name_yml }}.rest.output.visitor.xml.regexps, priority: 10 }
+{% if example %}
+
+    # Example
+    {{ bundle_name_yml }}.rest.input.parser.example_create:
+        parent: ezpublish_rest.input.parser
+        class: '%{{ bundle_name_yml }}.rest.input.parser.example_create.class%'
+        tags:
+            - { name: ezpublish_rest.input.parser, mediaType: application/vnd.{{ bundle_name|lower }}.api.ExampleCreate }
+
+    {{ bundle_name_yml }}.rest.output.value_object_visitor.example:
+        parent: ezpublish_rest.output.value_object_visitor.base
+        class: '%{{ bundle_name_yml }}.rest.output.value_object_visitor.example.class%'
+        tags:
+            - { name: ezpublish_rest.output.value_object_visitor, type: '%{{ bundle_name_yml }}.api.value_object.example.class%' }
+{% endif %}
